@@ -1,22 +1,36 @@
-const Product = require('../Models/Product');
 
-// Controller to create a new Product
+const Product = require('../models/Product'); 
+
+// Controller to create a new product
 exports.addProduct = async (req, res) => {
-  const { title,description,price,category,qty,image} = req.body;
+  const { title, description, price, category, qty } = req.body;
+  
+  if (!req.file) {
+    return res.status(400).json({ message: 'Image is required' });
+  }
 
   try {
-    const product = new Product({ title,description,price,category,qty,image });
+    const product = new Product({
+      title,
+      description,
+      price,
+      category,
+      qty,
+      image: req.file.path 
+    });
+
     await product.save();
-    res.status(201).json({message:'Product Add Successfully',product});
+    res.status(201).json({ message: 'Product added successfully', product });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ message: 'Error adding product', error: error.message }); 
   }
 };
+
 
 // Controller to get all Product
 exports.getProduct = async (req, res) => {
   try {
-    const { page = 1, limit = 10 } = req.query;
+    const { page = 1, limit = 100 } = req.query;
 
     const products = await Product.find()
       .skip((page - 1) * limit)
@@ -99,7 +113,6 @@ exports.searchProduct = async (req, res) => {
       ]
     };
   }
-
   try {
     const Product = await Product.find(query);
     res.status(200).json(Product);

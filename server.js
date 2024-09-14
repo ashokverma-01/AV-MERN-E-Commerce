@@ -1,4 +1,5 @@
 const express = require("express")
+const path = require("path")
 const app = express()
 const cors = require("cors")
 const bodyParser = require('body-parser');
@@ -19,7 +20,8 @@ app.use(cors(
         credentials:true
     }
 ));
-
+app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
+app.use('/user', express.static(path.join(__dirname, '/user')));
 app.use("/api/user",userRouter);
 app.use("/api/product",productRouter)
 app.use("/api/cart",cartRouter)

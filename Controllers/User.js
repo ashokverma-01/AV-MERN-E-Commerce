@@ -4,9 +4,14 @@ const User = require('../Models/User');
 const jwt = require("jsonwebtoken");
 const JWT_SECRET = "ashok@123";
 
+
 exports.register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
+
+    if (!req.file) {
+      return res.status(400).json({ message: 'Image is required' });
+    }
 
     // Check if the user already exists
     const user = await User.findOne({ email });
@@ -22,6 +27,7 @@ exports.register = async (req, res) => {
       name,
       email,
       password: hashedPassword,
+      image: req.file.path 
     });
 
     // Save the user to the database
